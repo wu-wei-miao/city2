@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>准到想报警！测测你到底属于哪座城市？</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=PingFang+SC:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0284c7',
+                            600: '#0369a1',
+                            700: '#075985',
+                        },
+                        vibe: {
+                            purple: '#8B5CF6',
+                            pink: '#EC4899',
+                            orange: '#F97316',
+                            emerald: '#10B981'
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 4s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="flex flex-col items-center justify-center p-3 sm:p-6 antialiased selection:bg-pink-500 selection:text-white">
+    <main id="app-container" class="w-full max-w-md sm:max-w-lg min-h-[620px] flex flex-col justify-between glass-card rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden transition-all duration-500 my-auto">
+        <div class="absolute -top-20 -left-20 w-48 h-48 bg-purple-500/30 rounded-full blur-3xl pointer-events-none animate-pulse-slow"></div>
+        <div class="absolute -bottom-20 -right-20 w-48 h-48 bg-pink-500/30 rounded-full blur-3xl pointer-events-none animate-pulse-slow" style="animation-delay:1.5s;"></div>
+
+        <section id="page-cover" class="flex flex-col justify-between h-full space-y-6 my-auto text-center z-10 transition-all duration-300">
+            <div class="space-y-4 pt-4">
+                <div class="inline-flex items-center px-4 py-1.5 rounded-full bg-white/10 text-pink-300 text-xs font-semibold tracking-wide border border-white/10 animate-float">
+                    <i class="fa-solid fa-bolt text-yellow-400 mr-2"></i> 2026 最新爆火心理测试
+                </div>
+
+                <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight">
+                    准到想报警！<br>
+                    <span class="text-gradient">测测你到底属于哪座城市？</span>
+                </h1>
+
+                <p class="text-gray-300 text-sm sm:text-base px-2 font-light leading-relaxed">
+                    10秒暴露你的精神籍贯！你是大都市的卷王，还是烟火小城的躺平大师？
+                </p>
+            </div>
+
+            <div class="my-6 relative flex justify-center">
+                <div class="w-32 h-32 sm:w-40 sm:h-40 rounded-full bg-gradient-to-tr from-cyan-500 via-indigo-500 to-pink-500 p-1 animate-float shadow-lg shadow-indigo-500/30">
+                    <div class="w-full h-full bg-slate-900 rounded-full flex flex-col items-center justify-center space-y-1">
+                        <i class="fa-solid fa-city text-4xl sm:text-5xl text-cyan-400"></i>
+                        <span class="text-xs font-bold text-gray-300 tracking-widest">DESTINY CITY</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-3 pb-2">
+                <button onclick="startQuiz()" class="w-full py-4 px-8 rounded-2xl bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 text-white font-bold text-lg shadow-lg shadow-purple-500/30 hover:opacity-95 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center space-x-2 group">
+                    <span>开始测试</span>
+                    <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                </button>
+                <p class="text-xs text-gray-400">共 8 道题 · 约花费 30 秒</p>
+            </div>
+        </section>
+
+        <section id="page-quiz" class="hidden flex-col justify-between h-full space-y-6 z-10 transition-all duration-300">
+            <div class="space-y-2">
+                <div class="flex justify-between items-center text-xs text-gray-300 font-medium">
+                    <span id="quiz-progress-text">问题 1 / 8</span>
+                    <span id="quiz-progress-percent" class="text-cyan-400 font-bold">12%</span>
+                </div>
+                <div class="w-full h-2 bg-white/10 rounded-full overflow-hidden p-0.5">
+                    <div id="quiz-progress-bar" class="h-full bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-500 rounded-full transition-all duration-300" style="width: 12.5%;"></div>
+                </div>
+            </div>
+
+            <div class="space-y-6 my-auto">
+                <h2 id="question-text" class="text-xl sm:text-2xl font-bold text-white leading-snug min-h-[60px] flex items-center"></h2>
+                <div id="options-container" class="space-y-3"></div>
+            </div>
+
+            <div class="flex justify-between items-center text-xs text-gray-400 pt-2">
+                <button id="prev-btn" onclick="prevQuestion()" class="hover:text-white transition-colors disabled:opacity-30 disabled:pointer-events-none flex items-center space-x-1">
+                    <i class="fa-solid fa-chevron-left text-xs"></i> <span>上一题</span>
+                </button>
+                <span class="italic">选择最直觉的答案</span>
+            </div>
+        </section>
+
+        <section id="page-result" class="hidden flex-col space-y-5 z-10 transition-all duration-300 overflow-y-auto max-h-[80vh] pr-1">
+            <div id="capture-area" class="space-y-5 p-1">
+                <div class="text-center space-y-2 bg-white/5 p-4 rounded-2xl border border-white/10">
+                    <span class="text-xs text-pink-300 font-semibold px-3 py-1 rounded-full bg-pink-500/20 inline-block">
+                        你的精神籍贯已锁定
+                    </span>
+                    <div class="text-xs text-gray-400 mt-1">灵魂契合度 <span id="match-score" class="text-cyan-400 font-bold text-base">98.5%</span></div>
+                    <h2 id="result-city" class="text-3xl sm:text-4xl font-extrabold text-gradient tracking-tight"></h2>
+                    <p id="result-title" class="text-sm font-medium text-amber-300"></p>
+                </div>
+
+                <div class="bg-white/5 p-4 rounded-2xl border border-white/10 flex flex-col items-center">
+                    <h3 class="text-xs font-semibold text-gray-300 self-start mb-2 flex items-center">
+                        <i class="fa-solid fa-chart-pie mr-2 text-cyan-400"></i>五维性格基因分析
+                    </h3>
+                    <div class="w-full flex justify-center py-1">
+                        <canvas id="radarChart" width="280" height="230" class="max-w-full"></canvas>
+                    </div>
+                </div>
+
+                <div class="bg-white/5 p-4 rounded-2xl border border-white/10 space-y-2">
+                    <h3 class="text-xs font-semibold text-gray-300 flex items-center">
+                        <i class="fa-solid fa-user-ninja mr-2 text-purple-400"></i>大数据精准诊断
+                    </h3>
+                    <p id="result-desc" class="text-xs sm:text-sm text-gray-200 leading-relaxed font-light"></p>
+                </div>
+
+                <div class="bg-white/5 p-4 rounded-2xl border border-white/10 space-y-3">
+                    <h3 class="text-xs font-semibold text-gray-300 flex items-center">
+                        <i class="fa-solid fa-compass mr-2 text-emerald-400"></i>城市生存指南
+                    </h3>
+                    <div class="grid grid-cols-1 gap-2 text-xs">
+                        <div class="flex items-start space-x-2">
+                            <span class="bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded shrink-0">打卡点</span>
+                            <span id="guide-spot" class="text-gray-300">--</span>
+                        </div>
+                        <div class="flex items-start space-x-2">
+                            <span class="bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded shrink-0">精神解药</span>
+                            <span id="guide-cure" class="text-gray-300">--</span>
+                        </div>
+                        <div class="flex items-start space-x-2">
+                            <span class="bg-rose-500/20 text-rose-300 px-2 py-0.5 rounded shrink-0">避坑禁忌</span>
+                            <span id="guide-taboo" class="text-gray-300">--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 text-xs">
+                    <div class="bg-white/5 p-3 rounded-xl border border-white/10 text-center space-y-1">
+                        <div class="text-gray-400">最佳旅友城市</div>
+                        <div id="partner-best" class="text-emerald-400 font-bold text-sm">--</div>
+                    </div>
+                    <div class="bg-white/5 p-3 rounded-xl border border-white/10 text-center space-y-1">
+                        <div class="text-gray-400">相克气场城市</div>
+                        <div id="partner-worst" class="text-rose-400 font-bold text-sm">--</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-2 pt-2">
+                <button onclick="shareOrSave()" class="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold text-sm shadow-lg shadow-pink-500/25 hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-share-nodes"></i>
+                    <span>分享我的命中城市</span>
+                </button>
+                <button onclick="restartQuiz()" class="w-full py-3 px-6 rounded-xl bg-white/10 hover:bg-white/15 text-gray-200 font-semibold text-sm transition-all border border-white/10">
+                    <i class="fa-solid fa-rotate-right mr-1"></i> 重新测试
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <div id="toast" class="fixed bottom-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs px-4 py-2 rounded-full shadow-2xl border border-white/20 opacity-0 pointer-events-none transition-all duration-300 z-50">
+        提示信息
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
